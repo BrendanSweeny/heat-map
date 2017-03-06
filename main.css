@@ -1,0 +1,62 @@
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 1.5em;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 2em;
+}
+
+.subtitle {
+  font-weight: 700;
+  font-size: 1.5em;
+}
+
+#toolTip > p, #toolTip > h4 {
+  margin: auto;
+  padding: 10px, 10px, 10px, 10px;
+}
+
+#toolTip > h4 {
+  margin-bottom: 1em;
+  padding: 10px, 10px, 10px, 10px;
+}
+
+#toolTip {
+  position: absolute;
+  pointer-events: none;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 3px;
+  min-width: 20px;
+  height: auto;
+  padding: 10px 10px 10px 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+}
+
+.tick {
+  stroke-width: 0.2em;
+  shape-rendering: crispEdges;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+.axis {
+  stroke-width: 0.2em;
+  shape-rendering: crispEdges;
+}
+
+.legend-title {
+  font-weight: 700;
+}
+
+.heat-map, .legend {
+  display: block;
+  margin: auto;
+}
