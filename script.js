@@ -32,14 +32,14 @@ let yAxis = d3.axisLeft()
               .tickFormat((d) => { return months[d - 1]; })
 
 // Heat map chart
-let chart = d3.select(".heat-map")
+let chart = d3.select("#heat-map")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
               .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Legend SVG
-let legend = d3.select(".legend")
+let legend = d3.select("#legend")
               .attr("width", legendWidth + legendMargin.left + legendMargin.right)
               .attr("height", legendHeight + legendMargin.top + legendMargin.bottom)
               .append("g")
@@ -95,6 +95,7 @@ d3.json(sourceAddress, (error, data) => {
 
   // Colorizes text based on negative/positive change in temperature
   function formatTipText(d) {
+    console.log(d);
     let html = "<h4>" + months[d.month - 1] + " " + d.year + "</h4>" +
                "<p>" + (data.baseTemperature + d.variance).toFixed(2) + " &deg;C</p>";
     let color = "black";
@@ -131,39 +132,46 @@ d3.json(sourceAddress, (error, data) => {
   color.domain(varianceExtent);
 
   // Apply data to SVG
-  chart.selectAll(".bar")
+  chart.selectAll(".cell")
        .data(data.monthlyVariance)
        .enter().append("rect")
-       .attr("class", "bar")
+       .attr("class", "cell")
        .attr("x", (d) => { return x(d.year); })
        .attr("y", (d) => { return y(d.month); })
        .attr("height", y.bandwidth())
        .attr("width", x.bandwidth())
+       .property("data-month", (d) => { return d.month; })
+       .property("data-year", (d) => { return d.year; })
+       .property("data-temp", (d) => { return data.baseTemperature + d.variance; })
        .style("fill", (d) => { return color(d.variance); })
        .on("mouseover", (d, i) => {
-         chart.selectAll(".bar").filter((p) => { return p === d; }).style("fill", (d) => { return highlightColor(color(d.variance))});
+         chart.selectAll(".cell").filter((p) => { return p === d; }).style("fill", (d) => { return highlightColor(color(d.variance))});
 
          toolTip
+            .property("date-year", d.year)
             .style("display", "block")
             .style("left", d3.event.pageX + 20 + "px")
             .style("top", d3.event.pageY + -50 + "px")
             .html(formatTipText(d));
+
        })
        .on("mouseout", (d) => {
-         chart.selectAll(".bar").filter((p) => { return p === d; }).style("fill", (d) => { return color(d.variance); });
+         chart.selectAll(".cell").filter((p) => { return p === d; }).style("fill", (d) => { return color(d.variance); });
          toolTip
             .style("display", "none");
        });
 
   // x-Axis
   chart.append("g")
-       .attr("class", "x-axis axis")
+       .attr("id", "x-axis")
+       .attr("class", "axis")
        .attr("transform", "translate(0 , " + height + ")")
        .call(xAxis.tickValues(x.domain().filter((d, i) => { return !( i % 10 ); })));
 
   // y-Axis
   chart.append("g")
-       .attr("class", "y-axis axis")
+       .attr("id", "y-axis")
+       .attr("class", "axis")
        .call(yAxis);
 
   // Chart Border
@@ -196,14 +204,14 @@ d3.json(sourceAddress, (error, data) => {
 
   // Chart Title
   chart.append("text")
-       .attr("class", "title")
+       .attr("id", "title")
        .attr("transform", "translate(" + width / 2 + ", "+ -(margin.top / 1.5) + ")")
        .style("text-anchor", "middle")
        .text("Monthly Global Land-Surface Temperature (1753 - 2015)");
 
   // Chart Subtitle
   chart.append("text")
-       .attr("class", "subtitle")
+       .attr("id", "description")
        .attr("transform", "translate(" + width / 2 + ", " + -(margin.top / 3) + ")")
        .style("text-anchor", "middle")
        .text("Base Temperature: 8.66 °C")
@@ -248,6 +256,7 @@ d3.json(sourceAddress, (error, data) => {
         .attr("transform", "translate(0 , " + legendHeight + ")")
         .call(legendAxis);
 
+  // Legend Title
   legend.append("text")
         .attr("class", "legend-title")
         .attr("transform", "translate(" + legendWidth / 2 + ", " + -(legendMargin.top / 2) +")")
